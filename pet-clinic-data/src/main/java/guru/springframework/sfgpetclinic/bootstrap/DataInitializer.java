@@ -16,14 +16,18 @@ public class DataInitializer implements CommandLineRunner {
     private final PetTypeService petTypeService;
     private final PetService petService;
     private final SpecialityService specialityService;
+    private final VisitService visitService;
 
     @Autowired
-    public DataInitializer(OwnerService ownerService, VetService vetService, PetTypeService petTypeService, PetService petService, SpecialityService specialityService) {
+    public DataInitializer(OwnerService ownerService, VetService vetService,
+                           PetTypeService petTypeService, PetService petService,
+                           SpecialityService specialityService, VisitService visitService) {
         this.ownerService = ownerService;
         this.vetService = vetService;
         this.petTypeService = petTypeService;
         this.petService = petService;
         this.specialityService = specialityService;
+        this.visitService = visitService;
     }
 
     @Override
@@ -72,11 +76,16 @@ public class DataInitializer implements CommandLineRunner {
         mimi.setName("Mimi");
         mimi.setBirthDate(LocalDate.now());
         mimi.setPetType(savedCat);
-        mimi.setOwner(owner2);
-        owner1.getPets().add(mimi);
-
+        Pet savedMimi = petService.save(mimi);
+        savedMimi.setOwner(owner2);
+        owner1.getPets().add(savedMimi);
         ownerService.save(owner2);
 
+        Visit mimiVisit = new Visit();
+        mimiVisit.setPet(savedMimi);
+        mimiVisit.setDate(LocalDate.now());
+        mimiVisit.setDescription("sneezy cat");
+        visitService.save(mimiVisit);
 
         Speciality radiology = new Speciality();
         radiology.setDescription("radiology");
